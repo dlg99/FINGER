@@ -511,7 +511,8 @@ struct HNSWFinger {
         const auto neighbors = GFinger->get_neighborhood(cand_node, level);
         auto stored_info = GFinger->get_stored_info(cand_node);
 
-        stats.searches_apprx++;
+        stats.searches_apprx += neighbors.degree();
+
         searcher.approximate_distance(
                 neighbors.degree(),
                 topk_ub_dist,
