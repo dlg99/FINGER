@@ -4,7 +4,7 @@
 #include "utils/matrix.hpp"
 #include "utils/scipy_loader.hpp"
 #include "ann/hnsw.hpp"
-
+#include <time.h>
 
 
 class StopW {
@@ -42,6 +42,10 @@ auto npy_to_drm = [](scipy_npy_t& X_npy) -> pecos::drm_t {
     return X;
 };
 
+void print_time() {
+  time_t givemetime = time(NULL);
+  std::cout << ctime(&givemetime);
+}
 
 template<typename MAT, typename feat_vec_t>
 void run_dense(std::string data_dir , char* model_path, index_type M, index_type efC, index_type max_level, int threads, int efs) {
@@ -58,15 +62,28 @@ void run_dense(std::string data_dir , char* model_path, index_type M, index_type
     pecos::ann::HNSWFinger<float, feat_vec_t> indexer;
     //pecos::ann::HNSWProductQuantizer4Bits<float, feat_vec_t> indexer;
     FILE* fp = fopen(model_path, "rb");
+    std::cout<< "Model path: " << model_path <<std::endl;
     if (!fp) {
        // indexer.train(X_trn, M, efC, threads, max_level);
+        print_time();
+        std::cout<< "Before train" <<std::endl;
         indexer.train(X_trn, M, efC, sub_dimension, 200, threads, max_level);
+        print_time();
         std::cout<< "After train" <<std::endl;
         indexer.save(model_path);
+      print_time();
         std::cout<< "After save" <<std::endl;
+      print_time();
+        std::cout<< "Before load" <<std::endl;
         indexer.load(model_path);
+      print_time();
+        std::cout<< "After load" <<std::endl;
     } else {
+      print_time();
+        std::cout<< "Before load" <<std::endl;
         indexer.load(model_path);
+      print_time();
+        std::cout<< "After load" <<std::endl;
         fclose(fp);
     }
 
